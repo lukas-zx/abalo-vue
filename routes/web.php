@@ -14,8 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 Route::view('/', 'welcome');
 
-Route::get('/newsite', [\App\Http\Controllers\AbArticleController::class, 'newsite']);
-
 Route::get('/testdata', [\App\Http\Controllers\AbTestDataController::class, 'getTestdata']);
 
 Route::get('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login');

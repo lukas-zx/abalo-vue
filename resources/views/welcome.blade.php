@@ -12,6 +12,6 @@
         <site-footer @toggle-impressum="toggleImpressum"></site-footer>
     </div>
     @vite('resources/js/app.js')
-    @vite('resources/css/app.css')
+    @vite('resources/css/app.scss')
 </body>
 </html>

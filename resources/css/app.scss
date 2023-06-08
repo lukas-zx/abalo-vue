@@ -1,0 +1,25 @@
+@use 'vars';
+
+@import './mainnav';
+@import './articlelist';
+@import './newarticle';
+@import './footer';
+
+* {
+    font-family: vars.$mainfont;
+}
+
+.articles {
+    &__searchbox {
+        width: 30%;
+        padding: 11px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border-radius: 5px;
+        border: 1px solid vars.$fh-black;
+    }
+    &__searchbox--colorchange:hover {
+        transition: border-color 2s;
+        border-color: blue;
+    }
+}

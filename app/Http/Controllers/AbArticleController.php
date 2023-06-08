@@ -138,10 +138,6 @@ class AbArticleController extends Controller
             return response()->json($id);
         }
     }
-
-    public function newsite (){
-        return view('newsite');
-    }
 }
 
 

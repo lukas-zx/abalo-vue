@@ -1,0 +1,16 @@
+@use 'vars';
+
+.footer {
+    margin-top: 10px;
+    border-top: 1px solid vars.$fh-black;
+    text-align: center;
+    &__paragraph {
+
+    }
+    &__link {
+        color: vars.$fh-black;
+    }
+    &__link--hover:hover {
+        color: vars.$fh-mint;
+    }
+}

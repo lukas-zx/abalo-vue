@@ -1,0 +1,22 @@
+.form {
+    * {
+        display: block;
+    }
+    &__label {
+
+    }
+    &__input {
+        margin-bottom: 10px;
+    }
+    &__textarea {
+
+    }
+    &__submitbutton {
+        margin-top: 10px;
+        height: 30px;
+    }
+    &__submitbutton--hover:hover {
+        width: 65px;
+        height: 28px;
+    }
+}

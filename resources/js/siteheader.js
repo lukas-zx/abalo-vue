@@ -16,6 +16,7 @@ export default {
                     this.navelements.forEach(function(value, key) {
                         let element = document.createElement('li');
                         element.innerText = value[0];
+                        element.className = 'mainnav__parentitem mainnav__parentitem--hover';
                         nav.appendChild(element);
 
                         if (value[1] !== null) {
@@ -24,6 +25,7 @@ export default {
                             value[1].forEach(function(value, key) {
                                 let element = document.createElement('li');
                                 element.innerText = value;
+                                element.className = 'mainnav__childitem mainnav__childitem--hover';
                                 innerNav.appendChild(element);
                             })
                             parent.appendChild(innerNav);
@@ -72,12 +74,7 @@ export default {
 
            let nav = new Navigation(this.navelements);
             nav.printNav();
-
         }
     },
-        template:`<div id="nav"></div>`,
-
-
-
-
+        template:`<nav class="mainnav" id="nav"></nav>`,
 }

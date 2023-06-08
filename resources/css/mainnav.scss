@@ -1,0 +1,32 @@
+@use 'vars';
+@mixin transform($property: rotate(-10deg)) {
+    color: vars.$fh-mint;
+    -webkit-transform-origin: $property;
+    -ms-transform: $property;
+    transform: $property;
+}
+
+.mainnav {
+    background: vars.$bg-color;
+    color: vars.$fh-white;
+    ul {
+        margin: 0;
+        list-style: none;
+        display:flex;
+        flex-wrap: nowrap;
+    }
+    &__parentitem {
+        display: inline;
+        padding: 10px;
+    }
+    &__parentitem--hover:hover {
+        @include transform(rotate(-10deg));
+    }
+    &__childitem {
+        display: inline;
+        padding: 10px;
+    }
+    &__childitem--hover:hover {
+        @include transform(rotate(-10deg));
+    }
+}

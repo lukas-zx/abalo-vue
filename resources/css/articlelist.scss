@@ -1,0 +1,38 @@
+@use 'vars';
+
+.articlelist {
+    border: 1px solid vars.$fh-black;
+    border-radius: 5px;
+    &__header {
+        font-weight: bold;
+        td {
+            padding: 10px;
+        }
+    }
+    &__item {
+        img {
+            width:100px;
+            height:50px;
+        }
+        .align-center {
+            text-align: center;
+        }
+        button {
+            height: 40px;
+            width: 40px;
+        }
+    }
+    &__item--hover {
+        button:hover {
+            transition: width 0.2s, height 0.2s;
+            height: 43px;
+            width: 43px;
+        }
+    }
+    &__item--rotate {
+        button:hover {
+            transition:transform 2s;
+            transform:rotate(180deg);
+        }
+    }
+}

@@ -15,7 +15,10 @@ export default{
             pagesize:5,
             items:[],
             shoppingcart:[],
-            default_url:""
+            default_url:"",
+            name:"",
+            price:0,
+            description:""
         }
     },
     mounted() {
@@ -119,6 +122,26 @@ export default{
             this.updateURL();
             this.loadArticles();
         },
+        submit() {
+            if (this.price <= 0) alert('Preis muss > 0 sein');
+            else {
+                let xhr = new XMLHttpRequest();
+                let url = '/api/article?name=' + this.name + '&price=' + this.price + '&description=' + this.description;
+                xhr.open('POST', url, true);
+                xhr.send();
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            alert('Erfolgreich');
+                            this.loadArticles();
+                        } else {
+                            alert('Fehler: ' + xhr.status + ' ' + xhr.statusText);
+                        }
+                    }
+                }
+            }
+        }
     },
 
     template:
@@ -127,9 +150,9 @@ export default{
        </div>
        <div v-else>
             <h1>Warenkorb:</h1>
-            <table>
+            <table class="articlelist">
                 <thead>
-                  <tr>
+                  <tr class="articlelist__header">
                       <td>Name</td>
                       <td>Preis</td>
                       <td>Beschreibung</td>
@@ -140,30 +163,29 @@ export default{
                   </tr>
                 </thead>
                 <tbody>
-                <tr v-for="item in shoppingcart" :key="item.id">
+                <tr v-for="item in shoppingcart" :key="item.id" class="articlelist__item articlelist__item--rotate">
                     <td>{{item.ab_name}}</td>
-                    <td>{{item.ab_price}}</td>
+                    <td class="align-center">{{item.ab_price}}</td>
                     <td>{{item.ab_description}}</td>
-                    <td>{{item.ab_creator_id }}</td>
+                    <td class="align-center">{{item.ab_creator_id }}</td>
                     <td>{{item.ab_createdate}}</td>
                     <td>
                         <img :src="item.ab_image" :alt="item.ab_image">
                     </td>
-                    <td><button @click="removeFromCart(item.id)">-</button></td>
+                    <td class="align-center"><button @click="removeFromCart(item.id)">-</button></td>
                 </tr>
                 </tbody>
             </table>
 
 
-            <h1>Artikelübersicht:</h1>
-
+            <h1 class="articles">Artikelübersicht:</h1>
             <h2>Suche:</h2>
             Suchbegriff:
-            <input type="text" v-model="searchvalue" @input="loadArticles">
+            <input type="text" v-model="searchvalue" @input="loadArticles" class="articles__searchbox articles__searchbox--colorchange">
             <h3>{{ search }}</h3>
-            <table>
+            <table class="articlelist">
                 <thead>
-                <tr>
+                <tr class="articlelist__header">
                     <td>Name</td>
                     <td>Preis</td>
                     <td>Beschreibung</td>
@@ -173,22 +195,34 @@ export default{
                     <td>Warenkorb</td>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="articlelist__item articlelist__item--hover">
                 <tr v-for="item in items" :key="item.id">
-                    <td>{{ item.ab_name }}</td>
-                    <td>{{item.ab_price}}</td>
+                    <td>{{item.ab_name}}</td>
+                    <td class="align-center">{{item.ab_price}}</td>
                     <td>{{item.ab_description}}</td>
-                    <td>{{item.ab_creator_id }}</td>
+                    <td class="align-center">{{item.ab_creator_id }}</td>
                     <td>{{item.ab_createdate}}</td>
                     <td>
                         <img :src="item.ab_image" :alt="item.ab_image">
                     </td>
-                    <td><button @click="addToCart(item.id)">+</button></td>
+                    <td class="align-center"><button @click="addToCart(item.id)">+</button></td>
                 </tr>
                 </tbody>
             </table>
             <button @click="prevPage">Vorherige Seite</button>
             {{offset / 5 + 1}}
             <button @click="nextPage">Nächste Seite</button>
+
+            <h1>Artikel hinzufügen</h1>
+            <form class="form">
+                <label for="name" class="form__label">Name:</label>
+                <input type="text" id="name" name="name" maxlength="80" required v-model="name" class="form__input">
+                <label for="price" class="form__label">Preis:</label>
+                <input type="text" id="price" name="price" required v-model="price" class="form__input">
+                <label for="description" class="form__label">Beschreibung:</label>
+                <textarea name="description" id="description" cols="30" rows="10" maxlength="1000"
+                          required v-model="description" class="form__textarea"></textarea>
+                <button @click="submit" class="form__submitbutton form__submitbutton--hover">Speichern</button>
+            </form>
        </div>`,
 }
