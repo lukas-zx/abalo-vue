@@ -13,6 +13,7 @@ export default{
             limit:5,
             offset:0,
             pagesize:5,
+            articleCount:0,
             items:[],
             shoppingcart:[],
             default_url:"",
@@ -31,7 +32,7 @@ export default{
             this.default_url = '/api/article' + '?limit=' + this.limit + '&offset=' + this.offset + '&search=' + this.searchvalue;
         },
         loadArticles() {
-            console.log(this.searchvalue);
+            console.log('moin');
             if (this.searchvalue.length >= 3) this.offset = 0;
             this.updateURL();
 
@@ -44,13 +45,13 @@ export default{
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
                         let json = JSON.parse(xhr.responseText);
+                        this.articleCount = json.articleCount;
                         if (json.length === 0) {
                             this.search = "Keine Suchergebnisse";
                         } else {
                             this.search = "Ergebnisse: "
                         }
-                        this.items = json;
-                        console.log(json);
+                        this.items = json.articles;
                     }
                 }
             }
@@ -70,14 +71,13 @@ export default{
                     if (xhr.status === 200) {
                         console.log(xhr.statusText);
                     } else {
-                        console.error(xhr.statusText);
+                        console.error('error in addToCart: ' + xhr.statusText);
                     }
                 }
             }
             this.refreshShoppingCart();
         },
         removeFromCart(id) {
-
             let xhr = new XMLHttpRequest();
             let url = '/api/shoppingcart/1/articles/' + id;
 
@@ -90,7 +90,7 @@ export default{
                     if (xhr.status === 200) {
                         console.log(xhr.statusText);
                     } else {
-                        console.error(xhr.statusText);
+                        console.error('error in removeFromCart: ' + xhr.statusText);
                     }
                 }
             }
@@ -104,9 +104,9 @@ export default{
             xhr.onload = () => {
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200) {
-                        let json = JSON.parse(xhr.responseText);
-                        this.shoppingcart = json;
-                        console.log(this.shoppingcart);
+                        this.shoppingcart = JSON.parse(xhr.responseText);
+                    } else {
+                        console.error('error in refreshShoppingCart: ' + xhr.statusText);
                     }
                 }
             }
@@ -150,7 +150,7 @@ export default{
        </div>
        <div v-else>
             <h1>Warenkorb:</h1>
-            <table class="articlelist">
+            <table v-if="this.shoppingcart.length > 0" class="articlelist">
                 <thead>
                   <tr class="articlelist__header">
                       <td>Name</td>
@@ -181,7 +181,9 @@ export default{
             <h1 class="articles">Artikelübersicht:</h1>
             <h2>Suche:</h2>
             Suchbegriff:
-            <input type="text" v-model="searchvalue" @input="loadArticles" class="articles__searchbox articles__searchbox--colorchange">
+            <input type="text" v-model="searchvalue" @input="loadArticles"
+                   class="articles__searchbox articles__searchbox--colorchange"
+                   id="articlesearchbox">
             <h3>{{ search }}</h3>
             <table class="articlelist">
                 <thead>
@@ -209,12 +211,12 @@ export default{
                 </tr>
                 </tbody>
             </table>
-            <button @click="prevPage">Vorherige Seite</button>
-            {{offset / 5 + 1}}
-            <button @click="nextPage">Nächste Seite</button>
+            <button @click="prevPage" v-if="this.offset > 0">Zurück</button>
+            Seite {{offset / 5 + 1}} von {{ Math.ceil(this.articleCount / this.limit) }}
+            <button @click="nextPage" v-if="this.articleCount > this.offset + this.limit">Weiter</button>
 
             <h1>Artikel hinzufügen</h1>
-            <form class="form">
+            <form class="form" id="newarticle_form">
                 <label for="name" class="form__label">Name:</label>
                 <input type="text" id="name" name="name" maxlength="80" required v-model="name" class="form__input">
                 <label for="price" class="form__label">Preis:</label>
