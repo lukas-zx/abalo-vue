@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>connect</title>
+</head>
+<body>
+<script>
+    let conn = new WebSocket('ws://localhost:8085/uebung');
+    conn.onopen = function(e) {
+        console.log('Connected');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>message</title>
+</head>
+<body>
+</body>
+<script>
+    let conn = new WebSocket('ws://localhost:8085/uebung');
+    conn.onmessage = function(e) {
+        console.log('Message received:', e.data);
+    };
+</script>
+</html>

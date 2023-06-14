@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>selected-message</title>
+</head>
+<body>
+</body>
+<script>
+    const Kennungsid = 1;
+    let conn = new WebSocket('ws://localhost:8085/uebung');
+    conn.onmessage = function(e) {
+        console.log('Received', e.data);
+    };
+</script>
+</html>

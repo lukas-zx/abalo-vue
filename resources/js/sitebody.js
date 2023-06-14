@@ -32,7 +32,7 @@ export default{
             this.default_url = '/api/article' + '?limit=' + this.limit + '&offset=' + this.offset + '&search=' + this.searchvalue;
         },
         loadArticles() {
-            console.log('moin');
+
             if (this.searchvalue.length >= 3) this.offset = 0;
             this.updateURL();
 

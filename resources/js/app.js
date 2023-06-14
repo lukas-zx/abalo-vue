@@ -4,6 +4,11 @@ import SiteHeader from './siteheader.js';
 import SiteBody from './sitebody.js';
 import SiteFooter from './sitefooter.js';
 
+let conn = new WebSocket('ws://localhost:8085/broadcast');
+conn.onmessage = function(e) {
+    alert(e.data);
+}
+
 const app = createApp({
     data() {
         return {
