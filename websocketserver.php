@@ -51,7 +51,6 @@ class Broadcast implements MessageComponentInterface {
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-        echo $msg;
         foreach ($this->clients as $client) {
             if ($from != $client) {
                 $client -> send($msg);
@@ -73,7 +72,6 @@ class Broadcast implements MessageComponentInterface {
 $app = new Ratchet\App('localhost', 8085);
 $app->route('/uebung', new Uebung, array('*'));
 $app->route('/broadcast', new Broadcast, array('*'));
-$app->route('/messagetouser', new MessageToUser, array('*'));
 
 echo "Starting WebSocketServer\n";
 $app->run();

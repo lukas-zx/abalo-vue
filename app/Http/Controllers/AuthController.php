@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     public function login(Request $request) {
-        $request->session()->put('abalo_id', 5);
+        $request->session()->put('abalo_id', 6);
         $request->session()->put('abalo_user', 'seller');
         $request->session()->put('abalo_mail', 'seller@abalo.example.com');
         $request->session()->put('abalo_time', time());
