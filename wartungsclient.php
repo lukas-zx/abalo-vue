@@ -7,7 +7,8 @@ require __DIR__ . '/vendor/autoload.php';
             "message" => "In Kürze verbessern wir Abalo für Sie!\nNach einer kurzen Pause sind wir wieder für Sie da!\nVersprochen.\n",
             "type" => "maintenance"
         ];
-        $conn->send("");
+        $data = json_encode($data);
+        $conn->send($data);
     }, function ($e) {
         echo "Could not connect: {$e->getMessage()}\n";
     });

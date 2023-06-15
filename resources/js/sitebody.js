@@ -55,7 +55,7 @@ export default {
                     articles.forEach(function (item) {
                         if (item.id === json.articleid) alert(json.message);
                     })
-                } else {
+                } else if (json.type === "maintenance") {
                     alert(json.message);
                 }
             }
