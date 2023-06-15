@@ -69,9 +69,11 @@ class Broadcast implements MessageComponentInterface {
         $conn->close();
     }
 }
+
 $app = new Ratchet\App('localhost', 8085);
 $app->route('/uebung', new Uebung, array('*'));
 $app->route('/broadcast', new Broadcast, array('*'));
+$app->route('/messagetouser', new MessageToUser, array('*'));
 
 echo "Starting WebSocketServer\n";
 $app->run();

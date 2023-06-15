@@ -10,7 +10,10 @@
     const Kennungsid = 1;
     let conn = new WebSocket('ws://localhost:8085/uebung');
     conn.onmessage = function(e) {
-        console.log('Received', e.data);
+        let json = JSON.parse(e.data);
+        let id = json.id;
+        let message = json.message;
+        if (id === Kennungsid) console.log(message);
     };
 </script>
 </html>

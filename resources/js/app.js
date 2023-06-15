@@ -6,7 +6,19 @@ import SiteFooter from './sitefooter.js';
 
 let conn = new WebSocket('ws://localhost:8085/broadcast');
 conn.onmessage = function(e) {
-    alert(e.data);
+    let json = JSON.parse(e.data);
+    if (json.type === "sold") {
+        axios.get('/isloggedin')
+            .then(response => {
+                let user = response.data;
+                console.log(user);
+                if (user['auth']) {
+                    if (user['id'] === json.creatorid) alert(json.message);
+                }
+            })
+    } else {
+        alert(json.message);
+    }
 }
 
 const app = createApp({

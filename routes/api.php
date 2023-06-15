@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AbArticleController;
+use App\Http\Controllers\AbShoppingcartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,9 +20,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/article', [\App\Http\Controllers\AbArticleController::class, 'search_api']);
-Route::post('/article', [\App\Http\Controllers\AbArticleController::class, 'addArticle_api']);
+Route::get('/article', [AbArticleController::class, 'search_api']);
+Route::post('/article', [AbArticleController::class, 'addArticle_api']);
+Route::post('/article/{id}/sold', [AbArticleController::class, 'soldArticle_api']);
 
-Route::post('/shoppingcart', [\App\Http\Controllers\AbShoppingcartController::class, 'addItem_api']);
-Route::delete('/shoppingcart/{shoppingcartid}/articles/{articleid}', [\App\Http\Controllers\AbShoppingcartController::class, 'deleteItem_api']);
-Route::get('/shoppingcart', [\App\Http\Controllers\AbShoppingcartController::class, 'getItems_api']);
+Route::post('/shoppingcart', [AbShoppingcartController::class, 'addItem_api']);
+Route::delete('/shoppingcart/{shoppingcartid}/articles/{articleid}', [AbShoppingcartController::class, 'deleteItem_api']);
+Route::get('/shoppingcart', [AbShoppingcartController::class, 'getItems_api']);

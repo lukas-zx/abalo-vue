@@ -1,5 +1,6 @@
-import Impressum from './impressum'
-export default{
+import Impressum from './impressum';
+import axios from 'axios';
+export default {
     components: {
         Impressum
     },
@@ -32,7 +33,6 @@ export default{
             this.default_url = '/api/article' + '?limit=' + this.limit + '&offset=' + this.offset + '&search=' + this.searchvalue;
         },
         loadArticles() {
-
             if (this.searchvalue.length >= 3) this.offset = 0;
             this.updateURL();
 
@@ -141,6 +141,15 @@ export default{
                     }
                 }
             }
+        },
+        sellItem(id) {
+            axios.post('/api/article/' + id + '/sold')
+                .then(response => {
+                    console.log('erfolg');
+                })
+                .catch(reason => {
+                    console.error(reason.message);
+                });
         }
     },
 
@@ -195,6 +204,7 @@ export default{
                     <td>Create Date</td>
                     <td>Image</td>
                     <td>Warenkorb</td>
+                    <td>Verkaufen</td>
                 </tr>
                 </thead>
                 <tbody class="articlelist__item articlelist__item--hover">
@@ -208,6 +218,9 @@ export default{
                         <img :src="item.ab_image" :alt="item.ab_image">
                     </td>
                     <td class="align-center"><button @click="addToCart(item.id)">+</button></td>
+                    <td>
+                        <button @click="sellItem(item.id)">💰</button>
+                    </td>
                 </tr>
                 </tbody>
             </table>

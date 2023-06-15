@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use DateTime;
 use Illuminate\Http\Request;
 use App\Models\AbArticle;
 use Illuminate\Support\Facades\DB;
 use JetBrains\PhpStorm\NoReturn;
-use function Webmozart\Assert\Tests\StaticAnalysis\length;
+use function Ratchet\Client\connect;
+
+require base_path() . '/vendor/autoload.php';
 
 class AbArticleController extends Controller
 {
@@ -143,6 +143,26 @@ class AbArticleController extends Controller
             return response()->json($id);
         }
     }
+
+    function soldArticle_api (Request $request, int $id) {
+        $article = AbArticle::select()
+            ->where('id', 'like', $id)
+            ->get();
+        $article = $article[0];
+
+        $message = 'Großartig! Ihr Artikel ' . $article['ab_name'] . ' wurde erfolgreich verkauft!';
+        $data = [
+            "message" => $message,
+            "creatorid" => $article['ab_creator_id'],
+            "type" => "sold"
+        ];
+        $data = json_encode($data);
+
+        connect('ws://localhost:8085/broadcast')
+            ->then(function($conn) use ($data) {
+                $conn->send($data);
+            }, function ($e) {
+                echo "Could not connect: {$e->getMessage()}\n";
+            });
+    }
 }
-
-
