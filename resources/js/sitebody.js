@@ -1,11 +1,11 @@
 import Impressum from './impressum';
-import axios from 'axios';
-
+import Textarea from "primevue/textarea";
 let articles = [];
 
 export default {
     components: {
-        Impressum
+        Impressum,
+        Textarea,
     },
     props:{
         showimpressum:Boolean,
@@ -22,7 +22,7 @@ export default {
             shoppingcart:[],
             default_url:"",
             name:"",
-            price:0,
+            price:"",
             description:"",
             userid: 0
         }
@@ -36,27 +36,29 @@ export default {
     },
     beforeUpdate() {
         articles = this.items;
-        console.log(articles);
     },
     methods: {
         initWebSocket() {
             let conn = new WebSocket('ws://localhost:8085/broadcast');
             conn.onmessage = function(e) {
                 let json = JSON.parse(e.data);
-                if (json.type === "sold") {
-                    axios.get('/isloggedin')
-                        .then(response => {
-                            let user = response.data;
-                            if (user['auth']) {
-                                if (user['id'] === json.creatorid) alert(json.message);
-                            }
+                switch(json.type) {
+                    case "sold": // notify creator
+                        axios.get('/isloggedin')
+                            .then(response => {
+                                let user = response.data;
+                                if (user['auth']) {
+                                    if (user['id'] === json.creatorid) alert(json.message);
+                                }
+                            })
+                        break;
+                    case "promote": // notify every user who sees the article
+                        articles.forEach(function (item) {
+                           if (item.id === json.articleid) alert(json.message);
                         })
-                } else if (json.type === "promote") {
-                    articles.forEach(function (item) {
-                        if (item.id === json.articleid) alert(json.message);
-                    })
-                } else if (json.type === "maintenance") {
-                    alert(json.message);
+                       break;
+                    default: // notify every user
+                        alert(json.message);
                 }
             }
         },
@@ -65,83 +67,49 @@ export default {
         },
         loadArticles() {
             if (this.searchvalue.length >= 3) this.offset = 0;
+
             this.updateURL();
+            axios.get(this.default_url)
+                .then(response => {
+                    let json = response.data;
+                    this.articleCount = json.articleCount;
 
-            // Artikel laden
-            let xhr = new XMLHttpRequest();
-            xhr.open('GET', this.default_url, true);
-            xhr.setRequestHeader('Accept', 'application/json');
+                    if(json.length === 0) this.search = "Keine Suchergebnisse";
+                    else this.search = "Ergebnisse:"
 
-            xhr.onload = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        let json = JSON.parse(xhr.responseText);
-                        this.articleCount = json.articleCount;
-                        if (json.length === 0) {
-                            this.search = "Keine Suchergebnisse";
-                        } else {
-                            this.search = "Ergebnisse: "
-                        }
-                        this.items = json.articles;
-                    }
-                }
-            }
-            xhr.send();
+                    this.items = json.articles;
+                })
+                .catch(error => {
+                    console.log('error loading articles: ' + error);
+                })
         },
         addToCart(id) {
-            let xhr = new XMLHttpRequest();
-            xhr.open('POST','/api/shoppingcart', true);
-            xhr.setRequestHeader('Accept', 'application/json');
+            axios.post('/api/shoppingcart', {
+                id: id
+            })
+                .catch(error => {
+                    console.error('error adding to shoppingcart: ' + error);
+                })
 
-            let item = new FormData();
-            item.append("id", id);
-            xhr.send(item);
-
-            xhr.onreadystatechange = function(){
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        console.log(xhr.statusText);
-                    } else {
-                        console.error('error in addToCart: ' + xhr.statusText);
-                    }
-                }
-            }
             this.refreshShoppingCart();
         },
         removeFromCart(id) {
-            let xhr = new XMLHttpRequest();
             let url = '/api/shoppingcart/1/articles/' + id;
 
-            xhr.open('DELETE', url, true);
-            xhr.setRequestHeader('Accept', 'application/json');
-            xhr.send();
+            axios.delete(url).catch(error => {
+                console.error('error removing from shoppingcart: ' + error);
+            })
 
-            xhr.onreadystatechange = function(){
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        console.log(xhr.statusText);
-                    } else {
-                        console.error('error in removeFromCart: ' + xhr.statusText);
-                    }
-                }
-            }
             this.refreshShoppingCart();
         },
         refreshShoppingCart() {
-            let xhr = new XMLHttpRequest();
-            xhr.open('GET', '/api/shoppingcart', true);
-            xhr.setRequestHeader('Accept', 'application/json');
-
-            xhr.onload = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        this.shoppingcart = JSON.parse(xhr.responseText);
-                    } else {
-                        console.error('error in refreshShoppingCart: ' + xhr.statusText);
-                    }
-                }
-            }
-            xhr.send();
+            axios.get('/api/shoppingcart')
+                .then(response => {
+                    this.shoppingcart = response.data;
+                })
+                .catch(error => {
+                    console.error('error refreshing shoppingcart: ' + error);
+                })
         },
         nextPage() {
             this.offset += this.pagesize;
@@ -156,21 +124,16 @@ export default {
         submit() {
             if (this.price <= 0) alert('Preis muss > 0 sein');
             else {
-                let xhr = new XMLHttpRequest();
                 let url = '/api/article?name=' + this.name + '&price=' + this.price + '&description=' + this.description;
-                xhr.open('POST', url, true);
-                xhr.send();
+                axios.post(url)
+                    .then(response => {
+                        alert('Erfolgreich');
+                        this.loadArticles();
+                    })
+                    .catch(error => {
+                        alert('Fehler: ' + error);
+                    })
 
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            alert('Erfolgreich');
-                            this.loadArticles();
-                        } else {
-                            alert('Fehler: ' + xhr.status + ' ' + xhr.statusText);
-                        }
-                    }
-                }
             }
         },
         setUserId() {
@@ -229,13 +192,12 @@ export default {
                 </tbody>
             </table>
 
-
             <h1 class="articles">Artikelübersicht:</h1>
-            <h2>Suche:</h2>
-            Suchbegriff:
-            <input type="text" v-model="searchvalue" @input="loadArticles"
-                   class="articles__searchbox articles__searchbox--colorchange"
-                   id="articlesearchbox">
+            <span class="p-input-icon-right">
+                <i class="pi pi-search" />
+                <InputText class="p-inputtext-lg" type="text" v-model="searchvalue"
+                           @input="loadArticles" placeholder="Suchbegriff" tab/>
+            </span>
             <h3>{{ search }}</h3>
             <table class="articlelist">
                 <thead>
@@ -279,14 +241,21 @@ export default {
 
             <h1>Artikel hinzufügen</h1>
             <form class="form" id="newarticle_form">
-                <label for="name" class="form__label">Name:</label>
-                <input type="text" id="name" name="name" maxlength="80" required v-model="name" class="form__input">
-                <label for="price" class="form__label">Preis:</label>
-                <input type="text" id="price" name="price" required v-model="price" class="form__input">
-                <label for="description" class="form__label">Beschreibung:</label>
-                <textarea name="description" id="description" cols="30" rows="10" maxlength="1000"
-                          required v-model="description" class="form__textarea"></textarea>
+                <span class="p-float-label">
+                    <InputText class="form__input" id="name" type="text" maxlength="80" v-model="name" tab required />
+                    <label for="name">Artikelname</label>
+                </span>
+                <span class="p-float-label form__input">
+                    <InputText class="form__input" id="price" type="text" v-model="price" tab required/>
+                    <label for="price">Preis</label>
+                </span>
+                <span class="p-float-label">
+                    <Textarea class="form__textarea" id="description" cols="30" rows="10"
+                              maxlength="1000" v-model="description" tab required auto-resize/>
+                    <label for="description">Artikelbeschreibung</label>
+                </span>
                 <button @click="submit" class="form__submitbutton form__submitbutton--hover">Speichern</button>
+                <Button label="Hinzufügen"/>
             </form>
        </div>`,
 }

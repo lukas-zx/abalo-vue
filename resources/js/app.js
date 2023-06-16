@@ -1,29 +1,19 @@
+// Vue
 import './bootstrap';
 import { createApp } from 'vue/dist/vue.esm-browser';
+
+// Abalo
 import SiteHeader from './siteheader.js';
 import SiteBody from './sitebody.js';
 import SiteFooter from './sitefooter.js';
 
-/*
-let conn = new WebSocket('ws://localhost:8085/broadcast');
-conn.onmessage = function(e) {
-    let json = JSON.parse(e.data);
-    if (json.type === "sold") {
-        axios.get('/isloggedin')
-            .then(response => {
-                let user = response.data;
-                app.setUserId(user['id']);
-                if (user['auth']) {
-                    if (user['id'] === json.creatorid) alert(json.message);
-                }
-            })
-    } else if (json.type === "promote") {
-
-    } else {
-        alert(json.message);
-    }
-}
-*/
+// PrimeVue
+import PrimeVue from 'primevue/config';
+import 'primevue/resources/primevue.min.css';
+import 'primevue/resources/themes/saga-blue/theme.css';
+import 'primeicons/primeicons.css';
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
 
 const app = createApp({
     data() {
@@ -49,4 +39,8 @@ const app = createApp({
             this.showImpressum = !this.showImpressum;
         },
     },
-}).mount('#app');
+});
+app.use(PrimeVue);
+app.component("InputText", InputText);
+app.component("Button", Button);
+app.mount('#app');
