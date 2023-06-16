@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/article', [AbArticleController::class, 'search_api']);
 Route::post('/article', [AbArticleController::class, 'addArticle_api']);
 Route::post('/article/{id}/sold', [AbArticleController::class, 'soldArticle_api']);
+Route::post('/article/{id}/promote', [AbArticleController::class, 'promoteArticle_api']);
 
 Route::post('/shoppingcart', [AbShoppingcartController::class, 'addItem_api']);
 Route::delete('/shoppingcart/{shoppingcartid}/articles/{articleid}', [AbShoppingcartController::class, 'deleteItem_api']);

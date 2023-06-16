@@ -1,5 +1,8 @@
 import Impressum from './impressum';
 import axios from 'axios';
+
+let articles = [];
+
 export default {
     components: {
         Impressum
@@ -20,15 +23,43 @@ export default {
             default_url:"",
             name:"",
             price:0,
-            description:""
+            description:"",
+            userid: 0
         }
     },
     mounted() {
+        this.setUserId();
         this.updateURL();
         this.loadArticles();
         this.refreshShoppingCart();
+        this.initWebSocket();
+    },
+    beforeUpdate() {
+        articles = this.items;
+        console.log(articles);
     },
     methods: {
+        initWebSocket() {
+            let conn = new WebSocket('ws://localhost:8085/broadcast');
+            conn.onmessage = function(e) {
+                let json = JSON.parse(e.data);
+                if (json.type === "sold") {
+                    axios.get('/isloggedin')
+                        .then(response => {
+                            let user = response.data;
+                            if (user['auth']) {
+                                if (user['id'] === json.creatorid) alert(json.message);
+                            }
+                        })
+                } else if (json.type === "promote") {
+                    articles.forEach(function (item) {
+                        if (item.id === json.articleid) alert(json.message);
+                    })
+                } else if (json.type === "maintenance") {
+                    alert(json.message);
+                }
+            }
+        },
         updateURL() {
             this.default_url = '/api/article' + '?limit=' + this.limit + '&offset=' + this.offset + '&search=' + this.searchvalue;
         },
@@ -142,14 +173,24 @@ export default {
                 }
             }
         },
+        setUserId() {
+            axios.get('/isloggedin')
+                .then(response => {
+                    let user = response.data;
+                    if(user['auth']) this.userid = user['id'];
+                })
+        },
         sellItem(id) {
             axios.post('/api/article/' + id + '/sold')
-                .then(response => {
-                    console.log('erfolg');
-                })
                 .catch(reason => {
                     console.error(reason.message);
                 });
+        },
+        promoteItem(id) {
+            axios.post('/api/article/' + id + '/promote')
+                .catch(reason => {
+                    console.error(reason.message);
+                })
         }
     },
 
@@ -181,7 +222,9 @@ export default {
                     <td>
                         <img :src="item.ab_image" :alt="item.ab_image">
                     </td>
-                    <td class="align-center"><button @click="removeFromCart(item.id)">-</button></td>
+                    <td class="align-center">
+                        <button @click="removeFromCart(item.id)">🙅</button>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -205,6 +248,7 @@ export default {
                     <td>Image</td>
                     <td>Warenkorb</td>
                     <td>Verkaufen</td>
+                    <td>Artikel bewerben</td>
                 </tr>
                 </thead>
                 <tbody class="articlelist__item articlelist__item--hover">
@@ -217,9 +261,14 @@ export default {
                     <td>
                         <img :src="item.ab_image" :alt="item.ab_image">
                     </td>
-                    <td class="align-center"><button @click="addToCart(item.id)">+</button></td>
-                    <td>
+                    <td class="align-center">
+                        <button @click="addToCart(item.id)">🛒</button>
+                    </td>
+                    <td class="align-center">
                         <button @click="sellItem(item.id)">💰</button>
+                    </td>
+                    <td v-if="this.userid === item.ab_creator_id" class="align-center">
+                        <button @click="promoteItem(item.id)">📰</button>
                     </td>
                 </tr>
                 </tbody>

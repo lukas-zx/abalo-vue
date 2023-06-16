@@ -1,10 +1,4 @@
 <?php
-
-/** /websocketserver.php (Im Laravel-Wurzelverzeichnis)
- *  composer.json +Abhängigkeit: cboden/ratchet
- *  Quelle: https://github.com/ratchetphp/Ratchet (Letzter Zugriff 8.5.2023)
- */
-
 use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
@@ -51,7 +45,7 @@ class Broadcast implements MessageComponentInterface {
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-        echo $msg;
+        echo "Received: " . $msg;
         foreach ($this->clients as $client) {
             if ($from != $client) {
                 $client -> send($msg);

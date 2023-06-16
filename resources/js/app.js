@@ -4,6 +4,7 @@ import SiteHeader from './siteheader.js';
 import SiteBody from './sitebody.js';
 import SiteFooter from './sitefooter.js';
 
+/*
 let conn = new WebSocket('ws://localhost:8085/broadcast');
 conn.onmessage = function(e) {
     let json = JSON.parse(e.data);
@@ -11,15 +12,18 @@ conn.onmessage = function(e) {
         axios.get('/isloggedin')
             .then(response => {
                 let user = response.data;
-                console.log(user);
+                app.setUserId(user['id']);
                 if (user['auth']) {
                     if (user['id'] === json.creatorid) alert(json.message);
                 }
             })
+    } else if (json.type === "promote") {
+
     } else {
         alert(json.message);
     }
 }
+*/
 
 const app = createApp({
     data() {
@@ -32,7 +36,7 @@ const app = createApp({
                 ['Kategorien', null],
                 ['Verkaufen', null],
                 ['Unternehmen', ['Philosophie', 'Karriere']]
-            ]
+            ],
         }
     },
     components: {
@@ -43,9 +47,6 @@ const app = createApp({
     methods:{
         toggleImpressum(){
             this.showImpressum = !this.showImpressum;
-        }
+        },
     },
-});
-app.component('SiteHeader', SiteHeader);
-app.component('SiteBody', SiteBody);
-const mountedApp = app.mount('#app');
+}).mount('#app');

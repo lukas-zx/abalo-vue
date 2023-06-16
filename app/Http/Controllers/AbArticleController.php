@@ -165,4 +165,27 @@ class AbArticleController extends Controller
                 echo "Could not connect: {$e->getMessage()}\n";
             });
     }
+
+    function promoteArticle_api(Request $request, int $id) {
+        $article = AbArticle::select()
+            ->where('id', 'like', $id)
+            ->get();
+        $article = $article[0];
+
+        $message = 'Der Artikel ' . $article['ab_name'] . ' wird nun günstiger angeboten! Greifen Sie schnell zu.';
+
+        $data = [
+            "message" => $message,
+            "articleid" => $id,
+            "type" => "promote"
+        ];
+        $data = json_encode($data);
+
+        connect('ws://localhost:8085/broadcast')
+            ->then(function($conn) use ($data) {
+                $conn->send($data);
+            }, function ($e) {
+                echo "Could not connect: {$e->getMessage()}\n";
+            });
+    }
 }
