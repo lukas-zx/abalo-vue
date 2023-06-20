@@ -146,7 +146,7 @@ class AbArticleController extends Controller
 
     function soldArticle_api (Request $request, int $id) {
         $article = AbArticle::select()
-            ->where('id', 'like', $id)
+            ->where('id', '=', $id)
             ->get();
         $article = $article[0];
 
