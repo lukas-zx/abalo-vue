@@ -13,7 +13,6 @@ import 'primevue/resources/primevue.min.css';
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primeicons/primeicons.css';
 import InputText from "primevue/inputtext";
-import Button from "primevue/button";
 
 const app = createApp({
     data() {
@@ -42,5 +41,4 @@ const app = createApp({
 });
 app.use(PrimeVue);
 app.component("InputText", InputText);
-app.component("Button", Button);
 app.mount('#app');
